@@ -1,8 +1,4 @@
-const {
-  gsap: { timeline, set, to, delayedCall },
-  Splitting,
-} = window;
-
+const { gsap, gsap: { to, timeline, set, delayedCall }, Splitting } = window;
 Splitting();
 
 const BTN = document.querySelector('.birthday-button__button');
@@ -34,55 +30,22 @@ const BLINK = (eyes) => {
 };
 BLINK(EYES);
 
-const FROSTING_TL = () =>
-  timeline()
-    .to('#frosting', { scaleX: 1.015, duration: 0.25 }, 0)
-    .to('#frosting', { scaleY: 1, duration: 1 }, 0)
-    .to('#frosting', { duration: 1, morphSVG: '.cake__frosting--end' }, 0);
-
-const SPRINKLES_TL = () =>
-  timeline().to('.cake__sprinkle', { scale: 1, duration: 0.06, stagger: 0.02 });
-
-const SPIN_TL = () =>
-  timeline()
-    .set('.cake__frosting-patch', { display: 'block' })
-    .to(['.cake__frosting--duplicate', '.cake__sprinkles--duplicate'], { x: 0, duration: 1 }, 0)
-    .to(['.cake__frosting--start', '.cake__sprinkles--initial'], { x: 65, duration: 1 }, 0)
-    .to('.cake__face', { duration: 1, x: -48.82 }, 0);
-
-const FLICKER_TL = timeline()
-  .to('.candle__flame-outer', { duration: 0.1, repeat: -1, yoyo: true, morphSVG: '#flame-outer' })
-  .to('.candle__flame-inner', { duration: 0.1, repeat: -1, yoyo: true, morphSVG: '#flame-inner' }, 0);
-
 const RESET = () => {
-  set('.char', { '--hue': () => Math.random() * 360, '--char-sat': 0, '--char-light': 0, x: 0, y: 0, opacity: 1 });
-  set('body', { '--frosting-hue': Math.random() * 360 });
+  set('.char', {
+    '--hue': () => Math.random() * 360,
+    '--char-sat': 0,
+    '--char-light': 0,
+    x: 0,
+    y: 0,
+    opacity: 1,
+  });
+  set('body', {
+    '--frosting-hue': Math.random() * 360,
+    '--glow-saturation': 50,
+    '--glow-lightness': 35,
+    '--glow-alpha': 0.4,
+    '--transparency-alpha': 0,
+    '--flame': 0,
+  });
   set('.cake__candle', { '--flame': 0 });
-  set('.birthday-button__cake', { display: 'none' });
 };
-RESET();
-
-const MASTER_TL = timeline({
-  onStart: () => SOUNDS.ON.play(),
-  onComplete: () => {
-    delayedCall(2, RESET);
-    BTN.removeAttribute('disabled');
-  },
-  paused: true,
-})
-  .set('.birthday-button__cake', { display: 'block' })
-  .to('.birthday-button', { scale: 1, duration: 0.2 })
-  .add(FROSTING_TL())
-  .add(SPRINKLES_TL())
-  .add(SPIN_TL());
-
-BTN.addEventListener('click', () => {
-  BTN.setAttribute('disabled', true);
-  MASTER_TL.restart();
-});
-
-SOUNDS.TUNE.onended = SOUNDS.MATCH.onended = () => MASTER_TL.play();
-document.querySelector('#volume').addEventListener('input', () => {
-  SOUNDS.TUNE.muted = !SOUNDS.TUNE.muted;
-});
-
