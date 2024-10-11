@@ -1,257 +1,213 @@
-const {
-  gsap,
-  gsap: { to, timeline, set, delayedCall },
-  Splitting,
-} = window
-
-Splitting()
-
-const BTN = document.querySelector('.birthday-button__button')
-const SOUNDS = {
-  CHEER: new Audio(
-    'https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/cheer.mp3'
-  ),
-  MATCH: new Audio(
-    'https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/match-strike-trimmed.mp3'
-  ),
-  TUNE: new Audio(
-    'https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/happy-birthday-trimmed.mp3'
-  ),
-  ON: new Audio('https://assets.codepen.io/605876/switch-on.mp3'),
-  BLOW: new Audio(
-    'https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/blow-out.mp3'
-  ),
-  POP: new Audio(
-    'https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/pop-trimmed.mp3'
-  ),
-  HORN: new Audio(
-    'https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/horn.mp3'
-  ),
+* {
+  box-sizing: border-box;
 }
 
-const EYES = document.querySelector('.cake__eyes')
-const BLINK = eyes => {
-  gsap.set(eyes, { scaleY: 1 })
-  if (eyes.BLINK_TL) eyes.BLINK_TL.kill()
-  eyes.BLINK_TL = new gsap.timeline({
-    delay: Math.floor(Math.random() * 4) + 1,
-    onComplete: () => BLINK(eyes),
-  })
-  eyes.BLINK_TL.to(eyes, {
-    duration: 0.05,
-    transformOrigin: '50% 50%',
-    scaleY: 0,
-    yoyo: true,
-    repeat: 1,
-  })
-}
-BLINK(EYES)
-
-const FROSTING_TL = () =>
-  timeline()
-    .to(
-      '#frosting',
-      {
-        scaleX: 1.015,
-        duration: 0.25,
-      },
-      0
-    )
-    .to(
-      '#frosting',
-      {
-        scaleY: 1,
-        duration: 1,
-      },
-      0
-    )
-    .to(
-      '#frosting',
-      {
-        duration: 1,
-        morphSVG: '.cake__frosting--end',
-      },
-      0
-    )
-// Extract to sprinkle
-const SPRINKLES_TL = () =>
-  timeline().to('.cake__sprinkle', { scale: 1, duration: 0.06, stagger: 0.02 })
-// Extract out to your own timeline
-const SPIN_TL = () =>
-  timeline()
-    .set('.cake__frosting-patch', { display: 'block' })
-    .to(
-      ['.cake__frosting--duplicate', '.cake__sprinkles--duplicate'],
-      { x: 0, duration: 1 },
-      0
-    )
-    .to(
-      ['.cake__frosting--start', '.cake__sprinkles--initial'],
-      { x: 65, duration: 1 },
-      0
-    )
-    .to('.cake__face', { duration: 1, x: -48.82 }, 0)
-
-const flickerSpeed = 0.1
-const FLICKER_TL = timeline()
-  .to('.candle__flame-outer', {
-    duration: flickerSpeed,
-    repeat: -1,
-    yoyo: true,
-    morphSVG: '#flame-outer',
-  })
-  .to(
-    '.candle__flame-inner',
-    {
-      duration: flickerSpeed,
-      repeat: -1,
-      yoyo: true,
-      morphSVG: '#flame-inner',
-    },
-    0
-  )
-
-const SHAKE_TL = () =>
-  timeline({ delay: 0.5 })
-    .set('.cake__face', { display: 'none' })
-    .set('.cake__face--straining', { display: 'block' })
-    .to(
-      '.birthday-button',
-      {
-        onComplete: () => {
-          set('.cake__face--straining', { display: 'none' })
-          set('.cake__face', { display: 'block' })
-        },
-        x: 1,
-        y: 1,
-        repeat: 13,
-        duration: 0.1,
-      },
-      0
-    )
-    .to(
-      '.cake__candle',
-      {
-        onComplete: () => {
-          FLICKER_TL.play()
-        },
-        onStart: () => {
-          SOUNDS.POP.play()
-          delayedCall(0.2, () => SOUNDS.POP.play())
-          delayedCall(0.4, () => SOUNDS.POP.play())
-        },
-        ease: 'Elastic.easeOut',
-        duration: 0.2,
-        stagger: 0.2,
-        scaleY: 1,
-      },
-      0.2
-    )
-const FLAME_TL = () =>
-  timeline({})
-    .to('.cake__candle', { '--flame': 1, stagger: 0.2, duration: 0.1 })
-    .to('body', { '--flame': 1, '--lightness': 5, duration: 0.2, delay: 0.2 })
-const LIGHTS_OUT = () =>
-  timeline().to('body', {
-    onStart: () => SOUNDS.BLOW.play(),
-    delay: 0.5,
-    '--lightness': 0,
-    duration: 0.1,
-    '--glow-saturation': 0,
-    '--glow-lightness': 0,
-    '--glow-alpha': 1,
-    '--transparency-alpha': 1,
-  })
-
-const RESET = () => {
-  set('.char', {
-    '--hue': () => Math.random() * 360,
-    '--char-sat': 0,
-    '--char-light': 0,
-    x: 0,
-    y: 0,
-    opacity: 1,
-  })
-  set('body', {
-    '--frosting-hue': Math.random() * 360,
-    '--glow-saturation': 50,
-    '--glow-lightness': 35,
-    '--glow-alpha': 0.4,
-    '--transparency-alpha': 0,
-    '--flame': 0,
-  })
-  set('.cake__candle', { '--flame': 0 })
-  to('body', {
-    '--lightness': 50,
-    duration: 0.25,
-  })
-  // SET THESE
-  set('.cake__frosting--end', { opacity: 0 })
-  set('#frosting', {
-    transformOrigin: '50% 10%',
-    scaleX: 0,
-    scaleY: 0,
-  })
-  set('.cake__frosting-patch', { display: 'none' })
-  set(['.cake__frosting--duplicate', '.cake__sprinkles--duplicate'], { x: -65 })
-  set('.cake__face', { x: -110 })
-  set('.cake__face--straining', { display: 'none' })
-  set('.cake__sprinkle', {
-    '--sprinkle-hue': () => Math.random() * 360,
-    scale: 0,
-    transformOrigin: '50% 50%',
-  })
-  set('.birthday-button', { scale: 0.6, x: 0, y: 0 })
-  set('.birthday-button__cake', { display: 'none' })
-  set('.cake__candle', { scaleY: 0, transformOrigin: '50% 100%' })
-}
-RESET()
-const MASTER_TL = timeline({
-  onStart: () => {
-    SOUNDS.ON.play()
-  },
-  onComplete: () => {
-    delayedCall(2, RESET)
-    BTN.removeAttribute('disabled')
-  },
-  paused: true,
-})
-  .set('.birthday-button__cake', { display: 'block' })
-  .to('.birthday-button', {
-    onStart: () => SOUNDS.CHEER.play(),
-    scale: 1,
-    duration: 0.2,
-  })
-  .to('.char', { '--char-sat': 70, '--char-light': 65, duration: 0.2 }, 0)
-  .to('.char', {
-    onStart: () => SOUNDS.HORN.play(),
-    delay: 0.75,
-    y: () => gsap.utils.random(-100, -200),
-    x: () => gsap.utils.random(-50, 50),
-    duration: () => gsap.utils.random(0.5, 1),
-  })
-  .to('.char', { opacity: 0, duration: 0.25 }, '>-0.5')
-  .add(FROSTING_TL())
-  .add(SPRINKLES_TL())
-  .add(SPIN_TL())
-  .add(SHAKE_TL())
-  .add(FLAME_TL(), 'FLAME_ON')
-  .add(LIGHTS_OUT(), 'LIGHTS_OUT')
-
-SOUNDS.TUNE.onended = SOUNDS.MATCH.onended = () => MASTER_TL.play()
-MASTER_TL.addPause('FLAME_ON', () => SOUNDS.MATCH.play())
-MASTER_TL.addPause('LIGHTS_OUT', () => SOUNDS.TUNE.play())
-BTN.addEventListener('click', () => {
-  BTN.setAttribute('disabled', true)
-  MASTER_TL.restart()
-})
-
-SOUNDS.TUNE.muted = SOUNDS.MATCH.muted = SOUNDS.HORN.muted = SOUNDS.POP.muted = SOUNDS.CHEER.muted = SOUNDS.BLOW.muted = SOUNDS.ON.muted = true
-
-const toggleAudio = () => {
-  SOUNDS.TUNE.muted = SOUNDS.MATCH.muted = SOUNDS.POP.muted = SOUNDS.HORN.muted = SOUNDS.CHEER.muted = SOUNDS.BLOW.muted = SOUNDS.ON.muted = !SOUNDS
-    .BLOW.muted
+:root {
+  --tongue: hsl(4, 80%, 42%);
+  --pupil: hsl(0, 0%, 100%);
+  --icing: hsl(0, 0%, 95%);
+  --stroke: hsl(0, 0%, 10%);
 }
 
-document.querySelector('#volume').addEventListener('input', toggleAudio)
+body {
+  --frosting: hsl(var(--frosting-hue, 0), 100%, 55%);
+  --lightness: 50;
+  --flame: 0;
+  --glow-hue: 40;
+  --glow-saturation: 50;
+  --glow-lightness: 35;
+  --glow-alpha: 0.4;
+  --transparency-alpha: 0;
+  --glow: hsla(var(--glow-hue), calc(var(--glow-saturation) * 1%), calc(var(--glow-lightness) * 1%), var(--glow-alpha));
+  --transparent: hsla(0, 0%, 0%, var(--transparency-alpha));
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: hsl(180, 30%, calc(var(--lightness, 50) * 1%));
+}
 
+.whitespace {
+  width: 7px;
+}
+
+.birthday-button {
+  position: relative;
+  transform: scale(0.6);
+  cursor: pointer;
+
+  &__text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-family: sans-serif;
+    font-weight: bold;
+
+    .char {
+      display: inline-block;
+      color: hsl(var(--hue, 0), calc(var(--char-sat, 0) * 1%), calc(var(--char-light, 0) * 1%));
+    }
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    height: 240px;
+    width: 240px;
+    background: radial-gradient(var(--glow), var(--transparent) 30%), radial-gradient(var(--glow), var(--transparent) 50%);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -70%) scale(calc(var(--flame) * 3));
+    z-index: 2;
+    filter: blur(15px);
+    opacity: var(--flame);
+  }
+
+  &:after {
+    content: '';
+    height: 30px;
+    width: 400px;
+    filter: blur(15px);
+    position: absolute;
+    background: radial-gradient(var(--glow), var(--transparent) 20%), radial-gradient(var(--glow), var(--transparent));
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(calc(var(--flame) * 1));
+    opacity: var(--flame);
+  }
+
+  &__button {
+    width: 240px;
+    height: 100px;
+    position: relative;
+    border: 0;
+    background: var(--icing);
+    border-radius: 14px;
+    cursor: pointer;
+  }
+
+  &__cake {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 289.5px;
+    display: none;
+  }
+}
+
+.cake {
+  &__eye-body {
+    fill: var(--stroke);
+  }
+  
+  &__eye-pupil {
+    fill: var(--pupil);
+  }
+
+  &__tongue {
+    fill: var(--tongue);
+  }
+
+  &__mouth-opening {
+    fill: var(--stroke);
+    stroke: var(--stroke);
+  }
+
+  &__sprinkle {
+    --sprinkle: hsl(var(--sprinkle-hue, 0), 100%, 75%);
+    fill: var(--sprinkle);
+  }
+
+  &__frosting {
+    &--start {
+      fill: var(--frosting);
+    }
+
+    &--duplicate {
+      fill: var(--frosting);
+    }
+  }
+}
+
+.candle__flame {
+  opacity: var(--flame, 0);
+
+  &-outer {
+    fill: hsl(22, 100%, 56%);
+  }
+
+  &-inner {
+    fill: hsl(50, 85%, 52%);
+  }
+}
+
+.face__stroke {
+  stroke: var(--stroke);
+}
+
+.cake__candle {
+  &:nth-of-type(1) {
+    --flame: 0;
+  }
+
+  &:nth-of-type(2) {
+    --flame: 0;
+  }
+
+  &:nth-of-type(3) {
+    --flame: 0;
+  }
+}
+
+label {
+  height: 44px;
+  width: 44px;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  cursor: pointer;
+
+  & > svg {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+
+  path {
+    fill: hsl(180, 20%, 35%);
+  }
+
+  svg:nth-of-type(1) {
+    display: none;
+  }
+}
+
+[type='checkbox'] {
+  height: 0;
+  width: 0;
+  position: absolute;
+  top: 0;
+  left: 100%;
+}
+
+:checked ~ label {
+  svg:nth-of-type(1) {
+    display: block;
+  }
+  
+  svg:nth-of-type(2) {
+    display: none;
+  }
+}
