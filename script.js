@@ -1,213 +1,88 @@
-* {
-  box-sizing: border-box;
-}
+const {
+  gsap: { timeline, set, to, delayedCall },
+  Splitting,
+} = window;
 
-:root {
-  --tongue: hsl(4, 80%, 42%);
-  --pupil: hsl(0, 0%, 100%);
-  --icing: hsl(0, 0%, 95%);
-  --stroke: hsl(0, 0%, 10%);
-}
+Splitting();
 
-body {
-  --frosting: hsl(var(--frosting-hue, 0), 100%, 55%);
-  --lightness: 50;
-  --flame: 0;
-  --glow-hue: 40;
-  --glow-saturation: 50;
-  --glow-lightness: 35;
-  --glow-alpha: 0.4;
-  --transparency-alpha: 0;
-  --glow: hsla(var(--glow-hue), calc(var(--glow-saturation) * 1%), calc(var(--glow-lightness) * 1%), var(--glow-alpha));
-  --transparent: hsla(0, 0%, 0%, var(--transparency-alpha));
-  display: flex;
-  overflow: hidden;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: hsl(180, 30%, calc(var(--lightness, 50) * 1%));
-}
+const BTN = document.querySelector('.birthday-button__button');
+const SOUNDS = {
+  CHEER: new Audio('https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/cheer.mp3'),
+  MATCH: new Audio('https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/match-strike-trimmed.mp3'),
+  TUNE: new Audio('https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/happy-birthday-trimmed.mp3'),
+  ON: new Audio('https://assets.codepen.io/605876/switch-on.mp3'),
+  BLOW: new Audio('https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/blow-out.mp3'),
+  POP: new Audio('https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/pop-trimmed.mp3'),
+  HORN: new Audio('https://s3-us-west-2.amazonaws.com/s.cdpn.io/605876/horn.mp3'),
+};
 
-.whitespace {
-  width: 7px;
-}
+const EYES = document.querySelector('.cake__eyes');
+const BLINK = (eyes) => {
+  gsap.set(eyes, { scaleY: 1 });
+  if (eyes.BLINK_TL) eyes.BLINK_TL.kill();
+  eyes.BLINK_TL = new gsap.timeline({
+    delay: Math.floor(Math.random() * 4) + 1,
+    onComplete: () => BLINK(eyes),
+  });
+  eyes.BLINK_TL.to(eyes, {
+    duration: 0.05,
+    transformOrigin: '50% 50%',
+    scaleY: 0,
+    yoyo: true,
+    repeat: 1,
+  });
+};
+BLINK(EYES);
 
-.birthday-button {
-  position: relative;
-  transform: scale(0.6);
-  cursor: pointer;
+const FROSTING_TL = () =>
+  timeline()
+    .to('#frosting', { scaleX: 1.015, duration: 0.25 }, 0)
+    .to('#frosting', { scaleY: 1, duration: 1 }, 0)
+    .to('#frosting', { duration: 1, morphSVG: '.cake__frosting--end' }, 0);
 
-  &__text {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-family: sans-serif;
-    font-weight: bold;
+const SPRINKLES_TL = () =>
+  timeline().to('.cake__sprinkle', { scale: 1, duration: 0.06, stagger: 0.02 });
 
-    .char {
-      display: inline-block;
-      color: hsl(var(--hue, 0), calc(var(--char-sat, 0) * 1%), calc(var(--char-light, 0) * 1%));
-    }
-  }
+const SPIN_TL = () =>
+  timeline()
+    .set('.cake__frosting-patch', { display: 'block' })
+    .to(['.cake__frosting--duplicate', '.cake__sprinkles--duplicate'], { x: 0, duration: 1 }, 0)
+    .to(['.cake__frosting--start', '.cake__sprinkles--initial'], { x: 65, duration: 1 }, 0)
+    .to('.cake__face', { duration: 1, x: -48.82 }, 0);
 
-  &:before {
-    content: '';
-    position: absolute;
-    height: 240px;
-    width: 240px;
-    background: radial-gradient(var(--glow), var(--transparent) 30%), radial-gradient(var(--glow), var(--transparent) 50%);
-    border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -70%) scale(calc(var(--flame) * 3));
-    z-index: 2;
-    filter: blur(15px);
-    opacity: var(--flame);
-  }
+const FLICKER_TL = timeline()
+  .to('.candle__flame-outer', { duration: 0.1, repeat: -1, yoyo: true, morphSVG: '#flame-outer' })
+  .to('.candle__flame-inner', { duration: 0.1, repeat: -1, yoyo: true, morphSVG: '#flame-inner' }, 0);
 
-  &:after {
-    content: '';
-    height: 30px;
-    width: 400px;
-    filter: blur(15px);
-    position: absolute;
-    background: radial-gradient(var(--glow), var(--transparent) 20%), radial-gradient(var(--glow), var(--transparent));
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(calc(var(--flame) * 1));
-    opacity: var(--flame);
-  }
+const RESET = () => {
+  set('.char', { '--hue': () => Math.random() * 360, '--char-sat': 0, '--char-light': 0, x: 0, y: 0, opacity: 1 });
+  set('body', { '--frosting-hue': Math.random() * 360 });
+  set('.cake__candle', { '--flame': 0 });
+  set('.birthday-button__cake', { display: 'none' });
+};
+RESET();
 
-  &__button {
-    width: 240px;
-    height: 100px;
-    position: relative;
-    border: 0;
-    background: var(--icing);
-    border-radius: 14px;
-    cursor: pointer;
-  }
+const MASTER_TL = timeline({
+  onStart: () => SOUNDS.ON.play(),
+  onComplete: () => {
+    delayedCall(2, RESET);
+    BTN.removeAttribute('disabled');
+  },
+  paused: true,
+})
+  .set('.birthday-button__cake', { display: 'block' })
+  .to('.birthday-button', { scale: 1, duration: 0.2 })
+  .add(FROSTING_TL())
+  .add(SPRINKLES_TL())
+  .add(SPIN_TL());
 
-  &__cake {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translate(-50%, 0);
-    width: 289.5px;
-    display: none;
-  }
-}
+BTN.addEventListener('click', () => {
+  BTN.setAttribute('disabled', true);
+  MASTER_TL.restart();
+});
 
-.cake {
-  &__eye-body {
-    fill: var(--stroke);
-  }
-  
-  &__eye-pupil {
-    fill: var(--pupil);
-  }
+SOUNDS.TUNE.onended = SOUNDS.MATCH.onended = () => MASTER_TL.play();
+document.querySelector('#volume').addEventListener('input', () => {
+  SOUNDS.TUNE.muted = !SOUNDS.TUNE.muted;
+});
 
-  &__tongue {
-    fill: var(--tongue);
-  }
-
-  &__mouth-opening {
-    fill: var(--stroke);
-    stroke: var(--stroke);
-  }
-
-  &__sprinkle {
-    --sprinkle: hsl(var(--sprinkle-hue, 0), 100%, 75%);
-    fill: var(--sprinkle);
-  }
-
-  &__frosting {
-    &--start {
-      fill: var(--frosting);
-    }
-
-    &--duplicate {
-      fill: var(--frosting);
-    }
-  }
-}
-
-.candle__flame {
-  opacity: var(--flame, 0);
-
-  &-outer {
-    fill: hsl(22, 100%, 56%);
-  }
-
-  &-inner {
-    fill: hsl(50, 85%, 52%);
-  }
-}
-
-.face__stroke {
-  stroke: var(--stroke);
-}
-
-.cake__candle {
-  &:nth-of-type(1) {
-    --flame: 0;
-  }
-
-  &:nth-of-type(2) {
-    --flame: 0;
-  }
-
-  &:nth-of-type(3) {
-    --flame: 0;
-  }
-}
-
-label {
-  height: 44px;
-  width: 44px;
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  cursor: pointer;
-
-  & > svg {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    left: 0;
-  }
-
-  path {
-    fill: hsl(180, 20%, 35%);
-  }
-
-  svg:nth-of-type(1) {
-    display: none;
-  }
-}
-
-[type='checkbox'] {
-  height: 0;
-  width: 0;
-  position: absolute;
-  top: 0;
-  left: 100%;
-}
-
-:checked ~ label {
-  svg:nth-of-type(1) {
-    display: block;
-  }
-  
-  svg:nth-of-type(2) {
-    display: none;
-  }
-}
