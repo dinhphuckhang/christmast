@@ -1,31 +1,42 @@
-.birthday-button
-  button.birthday-button__button
-    svg.birthday-button__cake(xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 76.609 47.643")
-      defs
-        g#candle(transform="translate(-48.82 -137.74)")
-          rect(ry=".567" y="147.888" x="72.548" height="12.001" width="4.252" fill="#ececec")
-          g.candle__flame
-            path.candle__flame-outer(d="M75.672 145.92c.608 1.207.086 2.224-.749 2.224s-1.512-.037-1.512-1.388.558-3.566 1.98-3.973c1.007-.288-.855.884.281 3.138z" fill="#f60")
-            path.candle__flame-inner(d="M75.081 146.449c.41.51.266 1.043-.13 1.128-.394.084-.682-.228-.822-.866 0 0-.13-1.382.502-1.719.447-.238-.315.505.45 1.457z" fill="#ff0")
-        clipPath#face-clip
-          rect(transform="translate(-48.82 -138.799)" width="63.5" height="26.458" x="55.374" y="159.984" ry="3.402")
-      g(clip-path="url(#face-clip)")
-        g.cake__face(transform="translate(-48.82 -138.799)")
-          g.cake__eyes
-            g.cake__eye(transform="matrix(1.38031 0 0 1.38031 34.723 -33.58)")
-              circle.cake__eye-body(cx="29.86" cy="149.022" r="2.457")
-              circle.cake__eye-pupil(cx="28.773" cy="148.162" r=".756")
-            g.cake__eye(transform="matrix(1.38031 0 0 1.38031 57.092 -33.58)")
-              circle.cake__eye-body(r="2.457" cy="149.022" cx="29.86")
-              circle.cake__eye-pupil(r=".756" cy="148.162" cx="28.773")
-          g.cake__mouth
-            path.cake__mouth-opening(d="M83.607 174.436a3.652 3.652 0 003.518 2.674 3.652 3.652 0 003.515-2.674z" stroke-width="1.18" stroke-linecap="round" stroke-linejoin="round")
-            path.cake__tongue(d="M88.836 175.492a3.113 2.329 0 00-2.869 1.425 3.652 3.652 0 001.158.192 3.652 3.652 0 002.899-1.44 3.113 2.329 0 00-1.188-.177z")
-    span.birthday-button__text(data-splitting="") Happy Birthday!
-input#volume(type="checkbox")
-label(for="volume" title="Toggle sound")
-  svg(viewBox="0 0 24 24")
-    path(d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z")
-  svg(viewBox="0 0 24 24")
-    path(d="M12,4L9.91,6.09L12,8.18M4.27,3L3,4.27L7.73,9H3V15H7L12,20V13.27L16.25,17.53C15.58,18.04 14.83,18.46 14,18.7V20.77C15.38,20.45 16.63,19.82 17.68,18.96L19.73,21L21,19.73L12,10.73M19,12C19,12.94 18.8,13.82 18.46,14.64L19.97,16.15C20.62,14.91 21,13.5 21,12C21,7.72 18,4.14 14,3.23V5.29C16.89,6.15 19,8.83 19,12M16.5,12C16.5,10.23 15.5,8.71 14,7.97V10.18L16.45,12.63C16.5,12.43 16.5,12.21 16.5,12Z")
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Button</title>
+  <link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting.css">
+  <style>
+    /* CSS styles will go here */
+  </style>
+</head>
+<body>
+  <div class="birthday-button">
+    <button class="birthday-button__button" id="button">Press me!</button>
+    <div class="birthday-button__cake">
+      <svg class="cake">
+        <g class="cake__eyes">
+          <!-- Eyes SVG here -->
+        </g>
+        <g class="cake__frosting">
+          <!-- Frosting SVG here -->
+        </g>
+        <g class="cake__candle">
+          <!-- Candles SVG here -->
+        </g>
+      </svg>
+    </div>
+  </div>
 
+  <label>
+    <input type="checkbox" id="volume">
+    <svg><path /></svg>
+  </label>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/MorphSVGPlugin.min.js"></script>
+  <script src="https://unpkg.com/splitting/dist/splitting.min.js"></script>
+  <script>
+    // JavaScript code will go here
+  </script>
+</body>
+</html>
